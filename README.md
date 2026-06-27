@@ -45,6 +45,16 @@ PORT=8787
 
 不要把 `.env` 提交到 GitHub。项目已经在 `.gitignore` 中忽略 `.env`。
 
+## 在线访问
+
+GitHub Pages 部署后可直接打开：
+
+```text
+https://wangyimin-afk.github.io/guandan-practice/
+```
+
+在线版本不包含 Express 后端，也不会暴露 DeepSeek API Key。未连接后端时，机器人会自动使用前端本地 AI 策略。
+
 ## 验证
 
 ```bash

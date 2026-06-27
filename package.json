@@ -8,6 +8,7 @@
     "dev:client": "vite --host 127.0.0.1",
     "dev:server": "tsx watch server/index.ts",
     "build": "tsc -b && vite build",
+    "build:pages": "GITHUB_PAGES=true npm run build",
     "preview": "vite preview --host 127.0.0.1",
     "test": "vitest run"
   },
