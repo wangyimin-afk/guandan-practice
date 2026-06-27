@@ -1,23 +1,72 @@
-# 掼蛋理牌训练
+# 掼蛋提升
 
-一个纯前端掼蛋理牌练习页，用来训练快速识别炸弹、同花顺、三带二、顺子、连对、控牌和散牌。
+完整掼蛋对战 Web App。前端使用 React + TypeScript + Vite，后端使用 Express 调 DeepSeek API，规则判断放在共享模块中，AI 只能从合法出牌里选择。
 
-## 使用
+## 功能
 
-打开 GitHub Pages 地址即可使用。也可以本地运行：
+- 四人 2v2 掼蛋，玩家坐南，北家为队友，东/西为对手。
+- 支持两副牌 108 张、当前级牌、红桃级牌逢人配。
+- 支持单张、对子、三张、三带二、顺子、连对、钢板、炸弹、同花顺、王炸。
+- 支持出牌合法性判断、压牌比较、不出、提示、AI 自动行动。
+- 支持头游/二游/三游/末游结算、升级、下一局自动进贡/还贡/抗贡。
+- 支持战绩统计、规则页、设置页。
+- DeepSeek 未配置或请求失败时，自动使用本地兜底 AI。
+
+## 本地运行
 
 ```bash
-python3 -m http.server 4175
+npm install
+cp .env.example .env
+npm run dev
 ```
 
-然后访问：
+前端地址：
 
 ```text
-http://127.0.0.1:4175
+http://127.0.0.1:5173
 ```
 
-## 训练方式
+后端地址：
 
-1. 点击「新发一手」随机发 27 张牌。
-2. 点选手牌，再点击右侧牌型按钮归类。
-3. 点击「提交评分」查看分数、问题提示和参考理牌。
+```text
+http://127.0.0.1:8787
+```
+
+## DeepSeek 配置
+
+在 `.env` 中配置：
+
+```bash
+DEEPSEEK_API_KEY=你的 key
+DEEPSEEK_BASE_URL=https://api.deepseek.com
+DEEPSEEK_MODEL=deepseek-v4-flash
+PORT=8787
+```
+
+不要把 `.env` 提交到 GitHub。项目已经在 `.gitignore` 中忽略 `.env`。
+
+## 验证
+
+```bash
+npm test
+npm run build
+```
+
+## GitHub 上传
+
+当前仓库已经配置远程：
+
+```text
+https://github.com/wangyimin-afk/guandan-practice.git
+```
+
+常规流程：
+
+```bash
+git status
+git add .
+git commit -m "Build full Guandan game app"
+git push
+```
+
+如果要走 Pull Request，建议从 `main` 新建功能分支再推送。

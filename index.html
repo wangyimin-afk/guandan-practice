@@ -3,76 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>掼蛋理牌训练</title>
-    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="完整掼蛋对战游戏，支持 DeepSeek AI 机器人和本地兜底策略。" />
+    <title>掼蛋提升</title>
   </head>
   <body>
-    <main class="app-shell">
-      <section class="workspace">
-        <header class="topbar">
-          <div>
-            <h1>掼蛋理牌训练</h1>
-            <p>目标：20 秒内找出炸弹、三带二、顺子、同花顺和控牌。</p>
-          </div>
-          <div class="score-panel" aria-live="polite">
-            <span class="score-label">本局评分</span>
-            <strong id="scoreValue">--</strong>
-          </div>
-        </header>
-
-        <section class="control-strip" aria-label="训练控制">
-          <button id="newDealBtn" class="primary">新发一手</button>
-          <button id="sortRankBtn">按点数排</button>
-          <button id="sortSuitBtn">按花色排</button>
-          <button id="undoBtn">撤销一组</button>
-          <button id="scoreBtn" class="accent">提交评分</button>
-          <div class="timer">
-            <span>用时</span>
-            <strong id="timerValue">0s</strong>
-          </div>
-        </section>
-
-        <section class="board">
-          <div class="hand-zone">
-            <div class="zone-title">
-              <h2>手牌</h2>
-              <span id="handCount">0 张</span>
-            </div>
-            <div id="hand" class="card-grid" aria-label="当前手牌"></div>
-          </div>
-
-          <aside class="group-zone">
-            <div class="zone-title">
-              <h2>整理区</h2>
-              <span id="groupCount">0 组</span>
-            </div>
-            <div class="group-actions" aria-label="组成牌型">
-              <button data-type="bomb">炸弹</button>
-              <button data-type="straightFlush">同花顺</button>
-              <button data-type="trioPair">三带二</button>
-              <button data-type="straight">顺子</button>
-              <button data-type="pairs">连对</button>
-              <button data-type="control">控牌</button>
-              <button data-type="loose">散牌</button>
-            </div>
-            <div id="groups" class="groups"></div>
-          </aside>
-        </section>
-
-        <section class="feedback-zone">
-          <div>
-            <h2>评分反馈</h2>
-            <div id="feedback" class="feedback">
-              点击牌面选中，再用右侧按钮组成牌型。先按点数排，再抓炸弹，最后扫同花顺。
-            </div>
-          </div>
-          <div>
-            <h2>参考理牌</h2>
-            <div id="reference" class="reference">提交后显示。</div>
-          </div>
-        </section>
-      </section>
-    </main>
-    <script src="./app.js"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
