@@ -17,6 +17,7 @@ const app = express();
 const port = Number(process.env.PORT ?? 8787);
 const deepseekBaseUrl = (process.env.DEEPSEEK_BASE_URL ?? "https://api.deepseek.com").replace(/\/$/, "");
 const deepseekModel = process.env.DEEPSEEK_MODEL ?? "deepseek-v4-flash";
+const deepseekTimeoutMs = Number(process.env.DEEPSEEK_TIMEOUT_MS ?? 8000);
 
 app.use(cors());
 app.use(express.json({ limit: "1mb" }));
@@ -51,6 +52,11 @@ function parseJsonObject(text: string): Record<string, unknown> | null {
       return null;
     }
   }
+}
+
+function sanitizeReason(reason: unknown, fallback: string): string {
+  if (typeof reason !== "string") return fallback;
+  return reason.replace(/\s+/g, " ").trim().slice(0, 90) || fallback;
 }
 
 function heuristicResponse(body: AiMoveRequest, reason = "本地兜底策略"): AiMoveResponse {
@@ -134,6 +140,7 @@ async function askDeepSeek(body: AiMoveRequest): Promise<AiMoveResponse | null> 
         },
       ],
     }),
+    signal: AbortSignal.timeout(deepseekTimeoutMs),
   });
 
   if (!response.ok) return null;
@@ -146,7 +153,7 @@ async function askDeepSeek(body: AiMoveRequest): Promise<AiMoveResponse | null> 
   if (!parsed) return null;
 
   const action = parsed.action === "play" ? "play" : parsed.action === "pass" ? "pass" : null;
-  const reason = typeof parsed.reason === "string" ? parsed.reason : "DeepSeek 策略";
+  const reason = sanitizeReason(parsed.reason, "DeepSeek 策略");
   if (action === "pass") {
     if (!body.currentCombo) return heuristicResponse(body, "DeepSeek 选择 pass，但当前需要主动出牌，改用本地策略。");
     return { action: "pass", cardIds: [], source: "deepseek", reason };

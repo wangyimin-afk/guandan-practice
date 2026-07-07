@@ -62,11 +62,18 @@ export interface GameState {
 export type Move =
   | {
       type: "pass";
+      ai?: AiMoveMeta;
     }
   | {
       type: "play";
       cardIds: string[];
+      ai?: AiMoveMeta;
     };
+
+export interface AiMoveMeta {
+  source: "deepseek" | "heuristic";
+  reason: string;
+}
 
 const PLAYER_META: Record<PlayerId, Pick<PlayerState, "name" | "seat" | "isBot">> = {
   0: { name: "你", seat: "南", isBot: false },
@@ -81,6 +88,12 @@ function makeLog(text: string, tone: GameLog["tone"] = "normal"): GameLog {
     text,
     tone,
   };
+}
+
+function makeAiLog(player: PlayerState, ai: AiMoveMeta | undefined): GameLog | null {
+  if (!ai) return null;
+  const source = ai.source === "deepseek" ? "DeepSeek" : "本地策略";
+  return makeLog(`${player.name} · ${source}：${ai.reason}`, ai.source === "deepseek" ? "good" : "warn");
 }
 
 function clonePlayers(players: Record<PlayerId, PlayerState>): Record<PlayerId, PlayerState> {
@@ -280,6 +293,8 @@ export function applyMove(state: GameState, playerId: PlayerId, move: Move): Gam
       return { ...state, message: "当前需要主动出牌，不能不出。" };
     }
     nextState.passed = Array.from(new Set([...nextState.passed, playerId]));
+    const aiLog = makeAiLog(nextState.players[playerId], move.ai);
+    if (aiLog) logs.push(aiLog);
     logs.push(makeLog(`${nextState.players[playerId].name} 不出。`));
 
     const active = activePlayers(nextState);
@@ -323,6 +338,8 @@ export function applyMove(state: GameState, playerId: PlayerId, move: Move): Gam
       combo.bombStrength ? "danger" : "normal",
     ),
   );
+  const aiLog = makeAiLog(nextState.players[playerId], move.ai);
+  if (aiLog) logs.push(aiLog);
 
   finishIfNeeded(nextState, playerId, logs);
   completeGameIfReady(nextState, logs);
@@ -357,8 +374,12 @@ export function chooseBotMove(state: GameState, playerId: PlayerId): Move {
   const player = state.players[playerId];
   const teammateCurrent = state.currentPlay ? getTeam(state.currentPlay.playerId) === player.team : false;
   const candidate = chooseHeuristicPlay(player.hand, state.currentPlay?.combo ?? null, state.level, teammateCurrent);
-  if (!candidate) return { type: "pass" };
-  return { type: "play", cardIds: candidate.cards.map((card) => card.id) };
+  const ai: AiMoveMeta = {
+    source: "heuristic",
+    reason: "本地兜底策略，按合法牌型和队友牌权快速选择。",
+  };
+  if (!candidate) return { type: "pass", ai };
+  return { type: "play", cardIds: candidate.cards.map((card) => card.id), ai };
 }
 
 export function createNextRound(state: GameState): GameState {

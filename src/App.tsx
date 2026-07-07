@@ -68,6 +68,13 @@ interface ApiConfig {
   deepseekModel: string;
 }
 
+interface AiMoveResponse {
+  action: "play" | "pass";
+  cardIds?: string[];
+  source?: "deepseek" | "heuristic";
+  reason?: string;
+}
+
 const emptyStats: StatsState = {
   games: 0,
   wins: 0,
@@ -688,10 +695,23 @@ export default function App() {
               round: game.round,
             }),
           });
-          const data = (await response.json()) as { action: "play" | "pass"; cardIds?: string[] };
-          move = data.action === "play" ? { type: "play", cardIds: data.cardIds ?? [] } : { type: "pass" };
+          const data = (await response.json()) as AiMoveResponse;
+          const ai = {
+            source: data.source ?? "heuristic",
+            reason: data.reason ?? "AI 已完成决策。",
+          };
+          move =
+            data.action === "play"
+              ? { type: "play", cardIds: data.cardIds ?? [], ai }
+              : { type: "pass", ai };
         } catch {
-          move = chooseBotMove(game, playerId);
+          move = {
+            ...chooseBotMove(game, playerId),
+            ai: {
+              source: "heuristic",
+              reason: "无法连接 DeepSeek 后端，已切换本地兜底策略。",
+            },
+          };
         }
       }
       if (cancelled) return;

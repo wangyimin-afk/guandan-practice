@@ -40,10 +40,13 @@ http://127.0.0.1:8787
 DEEPSEEK_API_KEY=你的 key
 DEEPSEEK_BASE_URL=https://api.deepseek.com
 DEEPSEEK_MODEL=deepseek-v4-flash
+DEEPSEEK_TIMEOUT_MS=8000
 PORT=8787
 ```
 
 不要把 `.env` 提交到 GitHub。项目已经在 `.gitignore` 中忽略 `.env`。
+
+高级 AI 会优先调用 DeepSeek，并在牌局记录中展示模型决策理由。DeepSeek 未配置、超时或请求失败时，后端会自动返回本地兜底策略，牌局不会卡住。
 
 ## 在线访问
 
